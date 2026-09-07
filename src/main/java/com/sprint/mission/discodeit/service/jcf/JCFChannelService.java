@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JCF_ChannelService implements ChannelService {
+public class JCFChannelService implements ChannelService {
 
     private final Map<UUID, Channel> data;
 
-    public JCF_ChannelService() {
+    public JCFChannelService() {
         this.data = new HashMap<>();
 
     //테스트용 채널입니다.(사용후 주석처리하세요)

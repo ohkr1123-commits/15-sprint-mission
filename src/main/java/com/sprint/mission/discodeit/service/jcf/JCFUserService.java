@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JCF_UserService implements UserService {
+public class JCFUserService implements UserService {
 
     private final Map<UUID, User> data;
 
-    public JCF_UserService() {
+    public JCFUserService() {
         this.data = new HashMap<>();
 
         // 테스트용 임시 계정(사용후 주석처리하세요)
