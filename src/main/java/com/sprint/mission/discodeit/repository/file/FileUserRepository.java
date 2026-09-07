@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class FileUserRepository implements UserRepository {
 
     private static final String FILE_PATH = "users.ser";
@@ -87,7 +89,7 @@ public class FileUserRepository implements UserRepository {
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
 
@@ -99,6 +101,12 @@ public class FileUserRepository implements UserRepository {
 
     @Override
     public boolean existsById(UUID id) {
+
+        for (User user : loadAll()) {
+            if (user.getId().equals(id)) {
+                return true;
+            }
+        }
         return false;
     }
 
