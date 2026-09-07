@@ -17,6 +17,7 @@ public class DiscodeitApplication {
 
 	public static void main(String[] args) {
 
+		// Spring IoC Container가 만들어둔 Bean을 가져옵니다.
 		ConfigurableApplicationContext context =
 				SpringApplication.run(DiscodeitApplication.class, args);
 
@@ -29,7 +30,6 @@ public class DiscodeitApplication {
 		MessageService messageService =
 				context.getBean(MessageService.class);
 
-
 		// 셋업
 		User user = setupUser(userService);
 		Channel channel = setupChannel(channelService);
@@ -37,6 +37,7 @@ public class DiscodeitApplication {
 		// 테스트
 		messageCreateTest(messageService, channel, user);
 
+		// 조회가 끝나면 출력!
 		System.out.println("Spring Bean 조회 완료");
 	}
 
@@ -54,7 +55,6 @@ public class DiscodeitApplication {
 		return user;
 	}
 
-
 	// 테스트용 Channel 생성
 	static Channel setupChannel(ChannelService channelService) {
 
@@ -64,7 +64,6 @@ public class DiscodeitApplication {
 
 		return channel;
 	}
-
 
 	// 테스트용 Message 생성
 	static void messageCreateTest(
@@ -85,4 +84,10 @@ public class DiscodeitApplication {
 			System.out.println("메시지 생성 실패");
 		}
 	}
+
+	/*
+	기존의 while문으로 작동하는 방식의 테스트는 스프링부트에서 없어도 작동이 가능함으로
+	JavaApplication으로부터 갖고 오지 않고 새로 만듬
+	*/
+
 }

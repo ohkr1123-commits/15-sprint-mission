@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.util.UUID;
 import java.io.Serializable;
 
+@Getter
 public class User implements Serializable {
 
     //필드
@@ -17,24 +20,13 @@ public class User implements Serializable {
     public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
         this.createdAt = System.currentTimeMillis();
+        this.updatedAt = this.createdAt;
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    //메서드
-    public UUID getId() { return id; }
-
-    public long getCreatedAt() { return createdAt; }
-
-    public long getUpdatedAt() { return  updatedAt; }
-
-    public  String getName() { return name; }
-
-    public String getEmail() { return email; }
-
-    public String getPassword() { return password; }
-
+    //메서드 setter을 적용하지 않아서 그대로 둠
     public void setUpdatedAt() { this.updatedAt = System.currentTimeMillis(); }
 
     public void setPassword(String password) { this.password = password; }
