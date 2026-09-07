@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FileChannelRepository implements ChannelRepository {
@@ -77,12 +78,12 @@ public class FileChannelRepository implements ChannelRepository {
 
 
     @Override
-    public Channel findById(UUID id) {
+    public Optional<Channel> findById(UUID id) {
 
         for (Channel channel : loadAll()) {
 
             if (channel.getId().equals(id)) {
-                return channel;
+                return Optional.of(channel);
             }
         }
 
@@ -94,6 +95,11 @@ public class FileChannelRepository implements ChannelRepository {
     public List<Channel> findAll() {
 
         return loadAll();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return false;
     }
 
 

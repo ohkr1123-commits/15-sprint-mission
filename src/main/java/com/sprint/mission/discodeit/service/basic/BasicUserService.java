@@ -28,7 +28,7 @@ public class BasicUserService implements UserService {
     @Override
     public User read(UUID id) {
 
-        return userRepository.findById(id);
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BasicUserService implements UserService {
     @Override
     public User update(UUID id, String name, String email, String password) {
 
-        User user = userRepository.findById(id);
+        User user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
             return null;

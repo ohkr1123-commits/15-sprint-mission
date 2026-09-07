@@ -3,10 +3,7 @@ package com.sprint.mission.discodeit.repository.jcf;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JCFUserRepository implements UserRepository {
 
@@ -25,15 +22,20 @@ public class JCFUserRepository implements UserRepository {
     }
 
     @Override
-    public User findById(UUID id) {
+    public Optional<User> findById(UUID id) {
 
-        return data.get(id);
+        return Optional.ofNullable(data.get(id));
     }
 
     @Override
     public List<User> findAll() {
 
         return List.copyOf(data.values());
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return data.containsKey(id);
     }
 
     @Override

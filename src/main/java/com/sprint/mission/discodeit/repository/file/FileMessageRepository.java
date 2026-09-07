@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FileMessageRepository implements MessageRepository {
@@ -77,12 +78,12 @@ public class FileMessageRepository implements MessageRepository {
 
 
     @Override
-    public Message findById(UUID id) {
+    public Optional<Message> findById(UUID id) {
 
         for (Message message : loadAll()) {
 
             if (message.getId().equals(id)) {
-                return message;
+                return Optional.of(message);
             }
         }
 
@@ -94,6 +95,11 @@ public class FileMessageRepository implements MessageRepository {
     public List<Message> findAll() {
 
         return loadAll();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return false;
     }
 
 

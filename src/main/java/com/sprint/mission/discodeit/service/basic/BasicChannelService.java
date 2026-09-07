@@ -28,7 +28,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public Channel read(UUID id) {
 
-        return channelRepository.findById(id);
+        return channelRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public Channel update(UUID id, String channelName) {
 
-        Channel channel = channelRepository.findById(id);
+        Channel channel = channelRepository.findById(id).orElse(null);
 
         if (channel == null) {
             return null;

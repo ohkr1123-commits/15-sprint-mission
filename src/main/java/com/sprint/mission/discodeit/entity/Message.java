@@ -18,6 +18,7 @@ public class Message implements Serializable {
     public Message(UUID channelId, UUID userId, String content) {
         this.id = UUID.randomUUID();
         this.createdAt = System.currentTimeMillis();
+        this.updatedAt = this.createdAt;
         this.channelId = channelId;
         this.userId = userId;
         this.content = content;

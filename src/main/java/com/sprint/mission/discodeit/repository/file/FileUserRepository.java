@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class FileUserRepository implements UserRepository {
@@ -77,12 +78,12 @@ public class FileUserRepository implements UserRepository {
 
 
     @Override
-    public User findById(UUID id) {
+    public Optional<User> findById(UUID id) {
 
         for (User user : loadAll()) {
 
             if (user.getId().equals(id)) {
-                return user;
+                return Optional.of(user);
             }
         }
 
@@ -94,6 +95,11 @@ public class FileUserRepository implements UserRepository {
     public List<User> findAll() {
 
         return loadAll();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return false;
     }
 
 

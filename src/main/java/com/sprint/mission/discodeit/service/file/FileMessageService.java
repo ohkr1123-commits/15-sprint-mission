@@ -28,7 +28,7 @@ public class FileMessageService implements MessageService {
     @Override
     public Message read(UUID id) {
 
-        return messageRepository.findById(id);
+        return messageRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FileMessageService implements MessageService {
     @Override
     public Message update(UUID id, String content) {
 
-        Message message = messageRepository.findById(id);
+        Message message = messageRepository.findById(id).orElse(null);
 
         if (message == null) {
             return null;

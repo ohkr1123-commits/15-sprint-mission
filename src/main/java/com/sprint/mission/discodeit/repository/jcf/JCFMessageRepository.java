@@ -3,10 +3,7 @@ package com.sprint.mission.discodeit.repository.jcf;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JCFMessageRepository implements MessageRepository {
 
@@ -25,15 +22,20 @@ public class JCFMessageRepository implements MessageRepository {
     }
 
     @Override
-    public Message findById(UUID id) {
+    public Optional<Message> findById(UUID id) {
 
-        return data.get(id);
+        return Optional.ofNullable(data.get(id));
     }
 
     @Override
     public List<Message> findAll() {
 
         return List.copyOf(data.values());
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return data.containsKey(id);
     }
 
     @Override
