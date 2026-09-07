@@ -48,7 +48,9 @@ public class JavaApplication {
                 new BasicChannelService(channelRepository);
 
         MessageService messageService =
-                new BasicMessageService(messageRepository);
+                new BasicMessageService(
+                        messageRepository, channelRepository, userRepository
+                );
 
         while (running) {
             try {
