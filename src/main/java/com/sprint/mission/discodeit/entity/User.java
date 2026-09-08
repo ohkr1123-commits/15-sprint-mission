@@ -16,6 +16,7 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String password;
+    private UUID profileId;
 
     //생성자 초기화
     public User(String name, String email, String password) {
@@ -25,6 +26,7 @@ public class User implements Serializable {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.profileId = null; //나중에 확인해야할 부분
     }
 
     //메서드 setter을 적용하지 않아서 그대로 둠
