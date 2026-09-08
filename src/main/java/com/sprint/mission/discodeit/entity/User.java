@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.entity;
 
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.io.Serializable;
 
@@ -10,8 +11,8 @@ public class User implements Serializable {
 
     //필드
     private UUID id;
-    private Long createdAt;
-    private Long updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String name;
     private String email;
     private String password;
@@ -19,7 +20,7 @@ public class User implements Serializable {
     //생성자 초기화
     public User(String name, String email, String password) {
         this.id = UUID.randomUUID();
-        this.createdAt = System.currentTimeMillis();
+        this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
         this.name = name;
         this.email = email;
@@ -27,7 +28,7 @@ public class User implements Serializable {
     }
 
     //메서드 setter을 적용하지 않아서 그대로 둠
-    public void setUpdatedAt() { this.updatedAt = System.currentTimeMillis(); }
+    public void setUpdatedAt() { this.updatedAt = Instant.now(); }
 
     public void setPassword(String password) { this.password = password; }
 
