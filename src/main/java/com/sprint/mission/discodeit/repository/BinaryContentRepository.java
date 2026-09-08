@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.repository;
 
-public interface BinaryContentRepository {
+import com.sprint.mission.discodeit.entity.BinaryContent;
 
+public interface BinaryContentRepository {
+    void save(BinaryContent binaryContent);
 }

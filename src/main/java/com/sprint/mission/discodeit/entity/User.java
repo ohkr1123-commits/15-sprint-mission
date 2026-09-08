@@ -30,6 +30,11 @@ public class User implements Serializable {
     }
 
     //메서드 setter을 적용하지 않아서 그대로 둠
+    public void setProfileId(UUID profileId) {
+        this.profileId = profileId;
+        this.updatedAt = Instant.now();
+    }
+
     public void setUpdatedAt() { this.updatedAt = Instant.now(); }
 
     public void setPassword(String password) { this.password = password; }
