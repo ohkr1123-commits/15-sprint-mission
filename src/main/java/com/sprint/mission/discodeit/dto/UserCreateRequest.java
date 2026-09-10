@@ -1,13 +1,9 @@
 package com.sprint.mission.discodeit.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public record UserCreateRequest (
 
-@Getter
-@AllArgsConstructor
-public class UserCreateRequest {
-
-    private String name;
-    private String email;
-    private String password;
-}
+        //유저 생성될때 DTO
+        String name,
+        String email,
+        String password
+) {}

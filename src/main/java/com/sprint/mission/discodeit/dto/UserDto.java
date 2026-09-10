@@ -11,5 +11,4 @@ public record UserDto(
         String email,
         UUID profileId,
         boolean online
-) {
-}
+) {}
