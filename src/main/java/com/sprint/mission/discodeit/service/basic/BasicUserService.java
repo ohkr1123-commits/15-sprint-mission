@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.User.UserFindRequest;
+import com.sprint.mission.discodeit.dto.User.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.entity.UserStatus;
@@ -12,6 +14,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,19 +75,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User read(UUID id) {
-
-        return userRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public List<User> readAll() {
-
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User update(UUID id, String name, String email, String password) {
+    public UserFindRequest read(UUID id) {
 
         User user = userRepository.findById(id).orElse(null);
 
@@ -92,9 +83,63 @@ public class BasicUserService implements UserService {
             return null;
         }
 
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(password);
+        UserStatus status =
+                userStatusRepository.findByUserId(id).orElse(null);
+
+        boolean online = status != null && status.isOnline();
+
+        return new UserFindRequest(
+                user.getId(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getName(),
+                user.getEmail(),
+                user.getProfileId(),
+                online
+        );
+    }
+
+    @Override
+    public List<UserFindRequest> readAll() {
+
+        List<User> users = userRepository.findAll();
+        List<UserFindRequest> result = new ArrayList<>();
+
+        for (User user : users) {
+
+            UserStatus status =
+                    userStatusRepository.findByUserId(user.getId()).orElse(null);
+
+            boolean online = status != null && status.isOnline();
+
+            result.add(new UserFindRequest(
+                    user.getId(),
+                    user.getCreatedAt(),
+                    user.getUpdatedAt(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getProfileId(),
+                    online
+            ));
+        }
+
+        return result;
+    }
+
+    @Override
+    public User update(    UUID id,
+                           UserUpdateRequest userRequest,
+                           BinaryContentCreateRequest profileRequest) {
+
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            return null;
+        }
+
+        user.setName(userRequest.name());
+        user.setEmail(userRequest.email());
+        user.setPassword(userRequest.password());
         user.setUpdatedAt();
 
         userRepository.save(user);
