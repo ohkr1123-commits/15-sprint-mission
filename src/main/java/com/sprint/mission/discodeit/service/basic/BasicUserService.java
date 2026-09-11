@@ -142,6 +142,28 @@ public class BasicUserService implements UserService {
         user.setPassword(userRequest.password());
         user.setUpdatedAt();
 
+        if (profileRequest != null) {
+
+            // 기존 프로필이 있으면 삭제
+            if (user.getProfileId() != null) {
+                binaryContentRepository.deleteById(user.getProfileId());
+            }
+
+            // 새로운 프로필 생성
+            BinaryContent newProfile = new BinaryContent(
+                    profileRequest.contentType(),
+                    profileRequest.fileName(),
+                    profileRequest.fileSize(),
+                    profileRequest.content()
+            );
+
+            // 새로운 프로필 저장
+            binaryContentRepository.save(newProfile);
+
+            // User가 새로운 프로필을 가리키도록 변경
+            user.setProfileId(newProfile.getId());
+        }
+
         userRepository.save(user);
 
         return user;
