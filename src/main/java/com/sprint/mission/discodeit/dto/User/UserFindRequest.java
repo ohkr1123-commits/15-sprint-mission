@@ -1,9 +1,9 @@
-package com.sprint.mission.discodeit.dto;
+package com.sprint.mission.discodeit.dto.User;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record UserDto(
+public record UserFindRequest(
         UUID id,
         Instant createdAt,
         Instant updatedAt,
