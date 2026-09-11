@@ -17,6 +17,7 @@ public class BasicAuthService implements AuthService {
     private final UserRepository userRepository;
     private final UserStatusRepository userStatusRepository;
 
+
     @Override
     public User login(LoginRequest request) {
         // username + password 일치하는 User 찾기
