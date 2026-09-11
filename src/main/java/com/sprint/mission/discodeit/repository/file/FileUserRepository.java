@@ -30,7 +30,6 @@ public class FileUserRepository implements UserRepository {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     private List<User> loadAll() {
 
@@ -74,28 +73,22 @@ public class FileUserRepository implements UserRepository {
         }
 
         saveAll(users);
-
         return user;
     }
-
 
     @Override
     public Optional<User> findById(UUID id) {
 
         for (User user : loadAll()) {
-
             if (user.getId().equals(id)) {
                 return Optional.of(user);
             }
         }
-
         return Optional.empty();
     }
 
-
     @Override
     public List<User> findAll() {
-
         return loadAll();
     }
 
@@ -110,14 +103,18 @@ public class FileUserRepository implements UserRepository {
         return false;
     }
 
-
     @Override
     public void deleteById(UUID id) {
 
         List<User> users = new ArrayList<>(loadAll());
-
         users.removeIf(user -> user.getId().equals(id));
-
         saveAll(users);
+    }
+
+    @Override
+    public Optional<User> findByName(String username) {
+        return findAll().stream()
+                .filter(user -> user.getName().equals(username))
+                .findFirst();
     }
 }

@@ -140,7 +140,6 @@ public class BasicUserService implements UserService {
         user.setName(userRequest.name());
         user.setEmail(userRequest.email());
         user.setPassword(userRequest.password());
-        user.setUpdatedAt();
 
         if (profileRequest != null) {
 
@@ -164,6 +163,7 @@ public class BasicUserService implements UserService {
             user.setProfileId(newProfile.getId());
         }
 
+        user.setUpdatedAt();
         userRepository.save(user);
 
         return user;
