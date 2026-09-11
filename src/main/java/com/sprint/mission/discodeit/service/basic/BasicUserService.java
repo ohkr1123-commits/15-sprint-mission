@@ -75,7 +75,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserFindRequest read(UUID id) {
+    public UserFindRequest find(UUID id) {
 
         User user = userRepository.findById(id).orElse(null);
 
@@ -100,7 +100,7 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public List<UserFindRequest> readAll() {
+    public List<UserFindRequest> findAll() {
 
         List<User> users = userRepository.findAll();
         List<UserFindRequest> result = new ArrayList<>();
@@ -127,9 +127,11 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(    UUID id,
-                           UserUpdateRequest userRequest,
-                           BinaryContentCreateRequest profileRequest) {
+    public User update(
+            UUID id,
+            UserUpdateRequest userRequest,
+            BinaryContentCreateRequest profileRequest
+    ) {
 
         User user = userRepository.findById(id).orElse(null);
 
@@ -137,18 +139,44 @@ public class BasicUserService implements UserService {
             return null;
         }
 
-        user.setName(userRequest.name());
-        user.setEmail(userRequest.email());
-        user.setPassword(userRequest.password());
+        // 1. 먼저 중복 검사
+        for (User other : userRepository.findAll()) {
 
+            if (other.getId().equals(id)) {
+                continue;
+            }
+
+            if (userRequest.name() != null
+                    && other.getName().equals(userRequest.name())) {
+                throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
+            }
+
+            if (userRequest.email() != null
+                    && other.getEmail().equals(userRequest.email())) {
+                throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            }
+        }
+
+        // 2. null이 아닌 값만 수정
+        if (userRequest.name() != null) {
+            user.setName(userRequest.name());
+        }
+
+        if (userRequest.email() != null) {
+            user.setEmail(userRequest.email());
+        }
+
+        if (userRequest.password() != null) {
+            user.setPassword(userRequest.password());
+        }
+
+        // 3. 프로필 이미지가 들어왔을 때만 교체
         if (profileRequest != null) {
 
-            // 기존 프로필이 있으면 삭제
             if (user.getProfileId() != null) {
                 binaryContentRepository.deleteById(user.getProfileId());
             }
 
-            // 새로운 프로필 생성
             BinaryContent newProfile = new BinaryContent(
                     profileRequest.contentType(),
                     profileRequest.fileName(),
@@ -156,10 +184,7 @@ public class BasicUserService implements UserService {
                     profileRequest.content()
             );
 
-            // 새로운 프로필 저장
             binaryContentRepository.save(newProfile);
-
-            // User가 새로운 프로필을 가리키도록 변경
             user.setProfileId(newProfile.getId());
         }
 

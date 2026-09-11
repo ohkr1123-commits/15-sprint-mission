@@ -119,4 +119,19 @@ public class FileMessageRepository implements MessageRepository {
 
         saveAll(messages);
     }
+
+    @Override
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return loadAll().stream()
+                .filter(message -> message.getChannelId().equals(channelId))
+                .toList();
+    }
+
+    @Override
+    public void deleteByChannelId(UUID channelId) {
+        List<Message> messages = new ArrayList<>(loadAll());
+        messages.removeIf(message ->
+                message.getChannelId().equals(channelId));
+        saveAll(messages);
+    }
 }

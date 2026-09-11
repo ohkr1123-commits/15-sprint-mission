@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreatRequest;
+import com.sprint.mission.discodeit.dto.UserDto.UserCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
@@ -32,7 +34,7 @@ public class DiscodeitApplication {
 
 		// 셋업
 		User user = setupUser(userService);
-		Channel channel = setupChannel(channelService);
+		Channel channel = setupChannel(channelService, user);
 
 		// 테스트
 		messageCreateTest(messageService, channel, user);
@@ -44,21 +46,31 @@ public class DiscodeitApplication {
 	// 테스트용 User 생성
 	static User setupUser(UserService userService) {
 
-		User user = userService.create(
-				"woody",
-				"woody@codeit.com",
-				"Password1!"
-		);
+		UserCreateRequest request =
+				new UserCreateRequest(
+						"woody",
+						"woody@codeit.com",
+						"Password1!"
+				);
+
+		User user = userService.create(request, null);
 
 		System.out.println("유저 생성: " + user.getName());
 
 		return user;
 	}
 
-	// 테스트용 Channel 생성
-	static Channel setupChannel(ChannelService channelService) {
+	// 테스트용 PUBLIC Channel 생성
+	static Channel setupChannel(ChannelService channelService, User user) {
 
-		Channel channel = channelService.create("공지");
+		PublicChannelCreatRequest request =
+				new PublicChannelCreatRequest(
+						user.getId(),
+						"공지",
+						"공지 채널입니다."
+				);
+
+		Channel channel = channelService.createPublic(request);
 
 		System.out.println("채널 생성: " + channel.getChannelName());
 

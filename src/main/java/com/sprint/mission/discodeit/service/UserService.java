@@ -17,10 +17,10 @@ public interface UserService {
     );
 
     //유저의 id로 조회하는 기능
-    UserFindRequest read(UUID id);
+    UserFindRequest find(UUID id);
 
     //등록된 모든 유저를 조회하는 기능
-    List<UserFindRequest> readAll();
+    List<UserFindRequest> findAll();
 
     //등록된 유저의 정보를 수정하는 기능
     User update( UUID id,

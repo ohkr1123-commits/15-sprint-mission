@@ -24,7 +24,10 @@ public class UserStatus {
     }
 
     public void updateLastActiveAt() {
-        this.lastActiveAt = Instant.now();
+        Instant now = Instant.now();
+
+        this.lastActiveAt = now;
+        this.updatedAt = now;
     }
 
     public boolean isOnline() {

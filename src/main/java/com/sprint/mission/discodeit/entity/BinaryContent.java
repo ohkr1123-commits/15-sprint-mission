@@ -8,22 +8,40 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
-public class BinaryContent implements Serializable {
+public final class BinaryContent implements Serializable {
 
-    private UUID id;
-    private Instant createdAt;
-    private String contentType;
-    private String fileName;
-    private long fileSize;
-    private byte[] content;
+    private final UUID id;
+    private final Instant createdAt;
+    private final String contentType;
+    private final String fileName;
+    private final long fileSize;
+    private final byte[] content;
 
+    public BinaryContent(
+            String contentType,
+            String fileName,
+            long fileSize,
+            byte[] content
+    ) {
 
-    public BinaryContent(String contentType, String fileName, long fileSize, byte[] content) {
+        if (content == null) {
+            throw new IllegalArgumentException(
+                    "파일 내용은 null일 수 없습니다."
+            );
+        }
+
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
         this.contentType = contentType;
         this.fileName = fileName;
         this.fileSize = fileSize;
-        this.content = content;
+
+        // 중요
+        this.content = content.clone();
+    }
+
+    // byte[]만 직접 getter 작성
+    public byte[] getContent() {
+        return content.clone();
     }
 }

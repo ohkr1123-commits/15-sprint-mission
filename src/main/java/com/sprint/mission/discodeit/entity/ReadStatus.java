@@ -23,4 +23,14 @@ public class ReadStatus {
         this.userId = userId;
         this.lastReadAt = null;
     }
+
+    public void updateLastReadAt(Instant lastReadAt) {
+
+        if (lastReadAt == null) {
+            throw new IllegalArgumentException("읽은 시간이 필요합니다.");
+        }
+
+        this.lastReadAt = lastReadAt;
+        this.updatedAt = Instant.now();
+    }
 }
