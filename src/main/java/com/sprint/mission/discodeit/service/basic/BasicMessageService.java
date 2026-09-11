@@ -1,5 +1,8 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.MessageDto.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.MessageDto.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -20,19 +23,24 @@ public class BasicMessageService implements MessageService {
     private final UserRepository userRepository;
 
     @Override
-    public Message create(UUID channelId, UUID userId, String content) {
+    public Message create(
+            MessageCreateRequest request,
+            List<BinaryContentCreateRequest> attachments
+    ) {
 
-        // channelId 존재하는지 검사
-        if (!channelRepository.existsById(channelId)) {
+        if (!channelRepository.existsById(request.channelId())) {
             return null;
-        } // 없으면 생성하지 않음
+        }
 
-        // userId 존재하는지 검사
-        if (!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(request.authorId())) {
             return null;
-        } // 없으면 생성하지 않음
+        }
 
-        Message message = new Message(channelId, userId, content);
+        Message message = new Message(
+                request.channelId(),
+                request.authorId(),
+                request.content()
+        );
 
         messageRepository.save(message);
 
@@ -45,14 +53,15 @@ public class BasicMessageService implements MessageService {
         return messageRepository.findById(id).orElse(null);
     }
 
+    // 특정 채널의 메시지만 조회
     @Override
-    public List<Message> readAll() {
-
-        return messageRepository.findAll();
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return messageRepository.findAllByChannelId(channelId);
     }
 
+    // DTO를 이용한 수정
     @Override
-    public Message update(UUID id, String content) {
+    public Message update(UUID id, MessageUpdateRequest request) {
 
         Message message = messageRepository.findById(id).orElse(null);
 
@@ -60,7 +69,7 @@ public class BasicMessageService implements MessageService {
             return null;
         }
 
-        message.setContent(content);
+        message.setContent(request.content());
 
         messageRepository.save(message);
 
