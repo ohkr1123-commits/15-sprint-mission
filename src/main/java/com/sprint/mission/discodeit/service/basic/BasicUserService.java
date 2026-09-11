@@ -35,30 +35,30 @@ public class BasicUserService implements UserService {
         // ② 이름과 이메일 중복 확인
         for (User user : users) {
 
-            if (user.getName().equals(userRequest.getName())) {
+            if (user.getName().equals(userRequest.name())) {
                 throw new IllegalArgumentException("이미 사용 중인 이름입니다.");
             }
 
-            if (user.getEmail().equals(userRequest.getEmail())) {
+            if (user.getEmail().equals(userRequest.email())) {
                 throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
             }
         }
 
         // ③ 중복이 없으면 기존처럼 User 생성
         User user = new User(
-                userRequest.getName(),
-                userRequest.getEmail(),
-                userRequest.getPassword()
+                userRequest.name(),
+                userRequest.email(),
+                userRequest.password()
         );
 
         // ④ 선택적으로 프로필 이미지 등록
         if (profileRequest != null) {
 
             BinaryContent profile = new BinaryContent(
-                    profileRequest.getContentType(),
-                    profileRequest.getFileName(),
-                    profileRequest.getFileSize(),
-                    profileRequest.getContent()
+                    profileRequest.contentType(),
+                    profileRequest.fileName(),
+                    profileRequest.fileSize(),
+                    profileRequest.content()
             );
             binaryContentRepository.save(profile);
             user.setProfileId(profile.getId());
