@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.BinaryContentRequest.BinaryContentCreate
 import com.sprint.mission.discodeit.dto.MessageDto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -21,6 +22,7 @@ public class BasicMessageService implements MessageService {
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
     private final UserRepository userRepository;
+    private BinaryContentRepository binaryContentRepository;
 
     @Override
     public Message create(
@@ -78,7 +80,19 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public void delete(UUID id) {
+        Message message = messageRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("메시지가 없습니다."));
+
+        List<UUID> attachmentIds =
+                message.getAttachmentIds() == null
+                        ? List.of()
+                        : List.copyOf(message.getAttachmentIds());
 
         messageRepository.deleteById(id);
+
+        for (UUID attachmentId : attachmentIds) {
+            binaryContentRepository.deleteById(attachmentId);
+        }
     }
 }

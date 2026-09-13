@@ -43,4 +43,14 @@ public class UserStatus implements java.io.Serializable {
         return !duration.isNegative()
                 && duration.compareTo(Duration.ofMinutes(5)) <= 0;
     }
+
+    public void updateLastActiveAt(Instant lastActiveAt) {
+
+        if (lastActiveAt == null) {
+            throw new IllegalArgumentException("마지막 활동 시간이 기록이 없습니다.");
+        }
+
+        this.lastActiveAt = lastActiveAt;
+        this.updatedAt = Instant.now();
+    }
 }
