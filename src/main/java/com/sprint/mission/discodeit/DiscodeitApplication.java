@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreatRequest;
+import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.UserDto.UserCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
@@ -66,8 +66,8 @@ public class DiscodeitApplication {
 	// 테스트용 PUBLIC Channel 생성
 	static Channel setupChannel(ChannelService channelService, User user) {
 
-		PublicChannelCreatRequest request =
-				new PublicChannelCreatRequest(
+		PublicChannelCreateRequest request =
+				new PublicChannelCreateRequest(
 						user.getId(),
 						"공지",
 						"공지 채널입니다."

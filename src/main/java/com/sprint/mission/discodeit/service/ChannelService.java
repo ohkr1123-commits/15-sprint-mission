@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.service;
 import com.sprint.mission.discodeit.dto.ChannelDto.ChannelFindRequest;
 import com.sprint.mission.discodeit.dto.ChannelDto.ChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.ChannelDto.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreatRequest;
+import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ChannelService {
 
     // PUBLIC 채널 생성
-    Channel createPublic(PublicChannelCreatRequest request);
+    Channel createPublic(PublicChannelCreateRequest request);
 
     // PRIVATE 채널 생성
     Channel createPrivate(PrivateChannelCreateRequest request);

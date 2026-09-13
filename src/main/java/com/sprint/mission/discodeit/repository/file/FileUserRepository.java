@@ -2,24 +2,42 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@ConditionalOnProperty(
+        prefix = "discodeit.repository",
+        name = "type",
+        havingValue = "file"
+)
 public class FileUserRepository implements UserRepository {
 
-    private static final String FILE_PATH = "users.ser";
+    private final Path filePath;
+
+    public FileUserRepository(
+            @Value("${discodeit.repository.file-directory:.discodeit}")
+            String fileDirectory
+    ) {
+        this.filePath = Path.of(
+                fileDirectory,
+                "users.ser"
+        );
+    }
 
 
     private void saveAll(List<User> users) {
 
         try (
-                FileOutputStream fos = new FileOutputStream(FILE_PATH);
+                FileOutputStream fos = new FileOutputStream(filePath.toFile());
                 ObjectOutputStream oos = new ObjectOutputStream(fos)
         ) {
 
@@ -33,14 +51,14 @@ public class FileUserRepository implements UserRepository {
     @SuppressWarnings("unchecked")
     private List<User> loadAll() {
 
-        File file = new File(FILE_PATH);
+        File file = filePath.toFile();
 
         if (!file.exists()) {
             return new ArrayList<>();
         }
 
         try (
-                FileInputStream fis = new FileInputStream(FILE_PATH);
+                FileInputStream fis = new FileInputStream(filePath.toFile());
                 ObjectInputStream ois = new ObjectInputStream(fis)
         ) {
 

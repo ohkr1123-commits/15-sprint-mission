@@ -14,19 +14,23 @@ public class Message implements Serializable {
     private Instant createdAt;
     private Instant updatedAt;
     private UUID channelId;
-    private UUID userId;
+    private UUID authorId;
     private String content;
     private List<UUID> attachmentIds;
 
 
-    public Message(UUID channelId, UUID userId, String content) {
+    public Message(UUID channelId, UUID authorId, String content, List<UUID> attachmentIds) {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
         this.channelId = channelId;
-        this.userId = userId;
+        this.authorId = authorId;
         this.content = content;
-        this.attachmentIds = null; //나중에 확인하고 수정해야할 부분
+
+        this.attachmentIds =
+                attachmentIds == null
+                        ? List.of()
+                        : List.copyOf(attachmentIds);
     }
 
     public void setContent(String content) {

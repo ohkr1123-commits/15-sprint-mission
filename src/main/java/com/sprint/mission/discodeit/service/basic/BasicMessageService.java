@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.BinaryContentRequest.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.MessageDto.MessageUpdateRequest;
+import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -12,6 +13,7 @@ import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class BasicMessageService implements MessageService {
     private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
     private final UserRepository userRepository;
-    private BinaryContentRepository binaryContentRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
     @Override
     public Message create(
@@ -38,10 +40,32 @@ public class BasicMessageService implements MessageService {
             return null;
         }
 
+        List<UUID> attachmentIds = new ArrayList<>();
+
+        if (attachments != null) {
+
+            for (BinaryContentCreateRequest attachment : attachments) {
+
+                BinaryContent binaryContent = new BinaryContent(
+                        attachment.contentType(),
+                        attachment.fileName(),
+                        attachment.fileSize(),
+                        attachment.content()
+                );
+
+                binaryContentRepository.save(binaryContent);
+
+                attachmentIds.add(
+                        binaryContent.getId()
+                );
+            }
+        }
+
         Message message = new Message(
                 request.channelId(),
                 request.authorId(),
-                request.content()
+                request.content(),
+                attachmentIds
         );
 
         messageRepository.save(message);
@@ -85,9 +109,7 @@ public class BasicMessageService implements MessageService {
                         new IllegalArgumentException("메시지가 없습니다."));
 
         List<UUID> attachmentIds =
-                message.getAttachmentIds() == null
-                        ? List.of()
-                        : List.copyOf(message.getAttachmentIds());
+                List.copyOf(message.getAttachmentIds());
 
         messageRepository.deleteById(id);
 

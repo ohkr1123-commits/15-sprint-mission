@@ -2,16 +2,34 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 @Repository
+@ConditionalOnProperty(
+        prefix = "discodeit.repository",
+        name = "type",
+        havingValue = "file"
+)
 public class FileReadStatusRepository implements ReadStatusRepository {
 
-    private static final String FILE_PATH = "readStatuses.ser";
+    private final Path filePath;
 
+    public FileReadStatusRepository(
+            @Value("${discodeit.repository.file-directory:.discodeit}")
+            String fileDirectory
+    ) {
+        this.filePath = Path.of(
+                fileDirectory,
+                "readStatuses.ser"
+        );
+    }
 
     @Override
     public ReadStatus save(ReadStatus readStatus) {
@@ -28,7 +46,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         return readStatus;
     }
 
-
     @Override
     public List<ReadStatus> findAll() {
 
@@ -39,20 +56,17 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         );
     }
 
-
     @Override
     public void deleteByChannelId(UUID channelId) {
 
         Map<UUID, ReadStatus> readStatuses = load();
 
         readStatuses.values().removeIf(
-                readStatus ->
-                        readStatus.getChannelId().equals(channelId)
+                readStatus -> readStatus.getChannelId().equals(channelId)
         );
 
         saveAll(readStatuses);
     }
-
 
     @Override
     public List<ReadStatus> findAllByChannelId(UUID channelId) {
@@ -62,7 +76,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         List<ReadStatus> result = new ArrayList<>();
 
         for (ReadStatus readStatus : readStatuses.values()) {
-
             if (readStatus.getChannelId().equals(channelId)) {
                 result.add(readStatus);
             }
@@ -70,7 +83,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
 
         return result;
     }
-
 
     @Override
     public Optional<ReadStatus> findById(UUID id) {
@@ -82,7 +94,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         );
     }
 
-
     @Override
     public Optional<ReadStatus> findByChannelIdAndUserId(
             UUID channelId,
@@ -92,7 +103,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         Map<UUID, ReadStatus> readStatuses = load();
 
         for (ReadStatus readStatus : readStatuses.values()) {
-
             if (
                     readStatus.getChannelId().equals(channelId)
                             && readStatus.getUserId().equals(userId)
@@ -104,7 +114,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         return Optional.empty();
     }
 
-
     @Override
     public List<ReadStatus> findAllByUserId(UUID userId) {
 
@@ -113,7 +122,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         List<ReadStatus> result = new ArrayList<>();
 
         for (ReadStatus readStatus : readStatuses.values()) {
-
             if (readStatus.getUserId().equals(userId)) {
                 result.add(readStatus);
             }
@@ -121,7 +129,6 @@ public class FileReadStatusRepository implements ReadStatusRepository {
 
         return result;
     }
-
 
     @Override
     public void deleteById(UUID id) {
@@ -133,20 +140,21 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         saveAll(readStatuses);
     }
 
-
     // Map 전체를 파일에 저장
-    private void saveAll(
-            Map<UUID, ReadStatus> readStatuses
-    ) {
+    private void saveAll(Map<UUID, ReadStatus> readStatuses) {
 
-        try (
-                ObjectOutputStream outputStream =
-                        new ObjectOutputStream(
-                                new FileOutputStream(FILE_PATH)
-                        )
-        ) {
+        try {
 
-            outputStream.writeObject(readStatuses);
+            Files.createDirectories(filePath.getParent());
+
+            try (
+                    ObjectOutputStream outputStream =
+                            new ObjectOutputStream(
+                                    new FileOutputStream(filePath.toFile())
+                            )
+            ) {
+                outputStream.writeObject(readStatuses);
+            }
 
         } catch (IOException e) {
 
@@ -157,12 +165,11 @@ public class FileReadStatusRepository implements ReadStatusRepository {
         }
     }
 
-
     // 파일에서 Map 전체 읽기
     @SuppressWarnings("unchecked")
     private Map<UUID, ReadStatus> load() {
 
-        File file = new File(FILE_PATH);
+        File file = filePath.toFile();
 
         if (!file.exists()) {
             return new HashMap<>();

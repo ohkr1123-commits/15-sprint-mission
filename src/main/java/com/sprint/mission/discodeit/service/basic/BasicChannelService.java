@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.ChannelDto.ChannelFindRequest;
 import com.sprint.mission.discodeit.dto.ChannelDto.ChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.ChannelDto.PrivateChannelCreateRequest;
-import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreatRequest;
+import com.sprint.mission.discodeit.dto.ChannelDto.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
@@ -30,7 +30,7 @@ public class BasicChannelService implements ChannelService {
     private final MessageRepository messageRepository;
 
     @Override
-    public Channel createPublic(PublicChannelCreatRequest request) {
+    public Channel createPublic(PublicChannelCreateRequest request) {
 
         Channel channel = new Channel(
                 request.ownerId(),
