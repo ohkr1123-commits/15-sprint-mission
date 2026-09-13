@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
-public class UserStatus {
+public class UserStatus implements java.io.Serializable {
 
     private UUID id;
     private Instant createdAt;

@@ -2,10 +2,12 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import org.springframework.stereotype.Repository;
 
 import java.io.*;
 import java.util.*;
 
+@Repository
 public class FileBinaryContentRepository implements BinaryContentRepository {
 
     private static final String FILE_PATH = "binaryContents.ser";

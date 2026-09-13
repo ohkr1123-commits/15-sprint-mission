@@ -77,9 +77,7 @@ public class BasicChannelService implements ChannelService {
 
         // 5. 검증된 사용자만 ReadStatus 생성
         for (UUID userId : userIds) {
-            ReadStatus readStatus = new ReadStatus(
-                    userId,
-                    channel.getId()
+            ReadStatus readStatus = new ReadStatus(channel.getId(), userId
                     // 기존 생성자에 맞게
             );
 

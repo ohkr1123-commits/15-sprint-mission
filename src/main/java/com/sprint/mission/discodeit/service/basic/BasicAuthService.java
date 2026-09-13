@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class BasicAuthService implements AuthService {
 
     private final UserRepository userRepository;
-    private final UserRepository userRepository;
     private final UserStatusRepository userStatusRepository;
 
 
