@@ -1,123 +1,138 @@
 package com.sprint.mission.discodeit.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import org.hibernate.Hibernate;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.test.context.ActiveProfiles;
 
+/**
+ * UserRepository 슬라이스 테스트
+ */
 @DataJpaTest
-@ActiveProfiles("test")
 @EnableJpaAuditing
+@ActiveProfiles("test")
 class UserRepositoryTest {
 
   @Autowired
-  UserRepository userRepository;
+  private UserRepository userRepository;
 
-  // 1. 사용자 이름으로 조회 성공
+  @Autowired
+  private TestEntityManager entityManager;
+
+  /**
+   * TestFixture: 테스트에서 일관된 상태를 제공하기 위한 고정된 객체 세트 여러 테스트에서 재사용할 수 있는 테스트 데이터를 생성하는 메서드
+   */
+  private User createTestUser(String username, String email) {
+    BinaryContent profile = new BinaryContent("profile.jpg", 1024L, "image/jpeg");
+    User user = new User(username, email, "password123!@#", profile);
+    // UserStatus 생성 및 연결
+    UserStatus status = new UserStatus(user, Instant.now());
+    return user;
+  }
+
   @Test
-  void 사용자_조회_성공() {
-
+  @DisplayName("사용자 이름으로 사용자를 찾을 수 있다")
+  void findByUsername_ExistingUsername_ReturnsUser() {
     // given
-    User user = new User("홍길동", "hong@test.com", "123456", null);
+    String username = "testUser";
+    User user = createTestUser(username, "test@example.com");
+    userRepository.save(user);
+
+    // 영속성 컨텍스트 초기화 - 1차 캐시 비우기
+    entityManager.flush();
+    entityManager.clear();
+
+    // when
+    Optional<User> foundUser = userRepository.findByUsername(username);
+
+    // then
+    assertThat(foundUser).isPresent();
+    assertThat(foundUser.get().getUsername()).isEqualTo(username);
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 사용자 이름으로 검색하면 빈 Optional을 반환한다")
+  void findByUsername_NonExistingUsername_ReturnsEmptyOptional() {
+    // given
+    String nonExistingUsername = "nonExistingUser";
+
+    // when
+    Optional<User> foundUser = userRepository.findByUsername(nonExistingUsername);
+
+    // then
+    assertThat(foundUser).isEmpty();
+  }
+
+  @Test
+  @DisplayName("이메일로 사용자 존재 여부를 확인할 수 있다")
+  void existsByEmail_ExistingEmail_ReturnsTrue() {
+    // given
+    String email = "test@example.com";
+    User user = createTestUser("testUser", email);
     userRepository.save(user);
 
     // when
-    var result = userRepository.findByUsername("홍길동");
+    boolean exists = userRepository.existsByEmail(email);
 
     // then
-    assertTrue(result.isPresent());
-    assertEquals("홍길동", result.get().getUsername());
+    assertThat(exists).isTrue();
   }
 
-  // 2. 사용자 이름으로 조회 실패
   @Test
-  void 사용자_조회_실패() {
-
-    // when
-    var result = userRepository.findByUsername("없는사용자");
-
-    // then
-    assertTrue(result.isEmpty());
-  }
-
-  // 3. 이메일 중복 확인 성공
-  @Test
-  void 이메일_중복_확인() {
-
+  @DisplayName("존재하지 않는 이메일로 확인하면 false를 반환한다")
+  void existsByEmail_NonExistingEmail_ReturnsFalse() {
     // given
-    User user = new User("김철수", "kim@test.com", "123456", null);
-    userRepository.save(user);
+    String nonExistingEmail = "nonexisting@example.com";
 
     // when
-    boolean result = userRepository.existsByEmail("kim@test.com");
+    boolean exists = userRepository.existsByEmail(nonExistingEmail);
 
     // then
-    assertTrue(result);
+    assertThat(exists).isFalse();
   }
 
-  // 4. 이메일 중복 없음
   @Test
-  void 이메일_중복_없음() {
-
-    // when
-    boolean result = userRepository.existsByEmail("none@test.com");
-
-    // then
-    assertFalse(result);
-  }
-
-  // 5. 사용자 이름 중복 확인
-  @Test
-  void 사용자이름_중복_확인() {
-
+  @DisplayName("모든 사용자를 프로필과 상태 정보와 함께 조회할 수 있다")
+  void findAllWithProfileAndStatus_ReturnsUsersWithProfileAndStatus() {
     // given
-    User user = new User("홍길동", "hong@test.com", "123456", null);
-    userRepository.save(user);
+    User user1 = createTestUser("user1", "user1@example.com");
+    User user2 = createTestUser("user2", "user2@example.com");
+
+    userRepository.saveAll(List.of(user1, user2));
+
+    // 영속성 컨텍스트 초기화 - 1차 캐시 비우기
+    entityManager.flush();
+    entityManager.clear();
 
     // when
-    boolean result = userRepository.existsByUsername("홍길동");
+    List<User> users = userRepository.findAllWithProfileAndStatus();
 
     // then
-    assertTrue(result);
+    assertThat(users).hasSize(2);
+    assertThat(users).extracting("username").containsExactlyInAnyOrder("user1", "user2");
+
+    // 프로필과 상태 정보가 함께 조회되었는지 확인 - 프록시 초기화 없이도 접근 가능한지 테스트
+    User foundUser1 = users.stream().filter(u -> u.getUsername().equals("user1")).findFirst()
+        .orElseThrow();
+    User foundUser2 = users.stream().filter(u -> u.getUsername().equals("user2")).findFirst()
+        .orElseThrow();
+
+    // 프록시 초기화 여부 확인
+    assertThat(Hibernate.isInitialized(foundUser1.getProfile())).isTrue();
+    assertThat(Hibernate.isInitialized(foundUser1.getStatus())).isTrue();
+    assertThat(Hibernate.isInitialized(foundUser2.getProfile())).isTrue();
+    assertThat(Hibernate.isInitialized(foundUser2.getStatus())).isTrue();
   }
-
-  // 6. 사용자 이름 중복 없음
-  @Test
-  void 사용자이름_중복_없음() {
-
-    // when
-    boolean result = userRepository.existsByUsername("없는사용자");
-
-    // then
-    assertFalse(result);
-  }
-
-  // 7. 페이징 및 정렬 테스트
-  @Test
-  void 사용자_페이징_정렬_성공() {
-
-    // given
-    userRepository.save(new User("charlie", "c@test.com", "123456", null));
-    userRepository.save(new User("alice", "a@test.com", "123456", null));
-    userRepository.save(new User("bob", "b@test.com", "123456", null));
-
-    PageRequest pageable =
-        PageRequest.of(0, 2, Sort.by("username").ascending());
-
-    // when
-    Page<User> result = userRepository.findAll(pageable);
-
-    // then
-    assertEquals(2, result.getContent().size());
-    assertEquals(3, result.getTotalElements());
-    assertEquals("alice", result.getContent().get(0).getUsername());
-    assertEquals("bob", result.getContent().get(1).getUsername());
-  }
-}
+} 

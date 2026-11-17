@@ -30,4 +30,3 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
 
   void deleteAllByChannelId(UUID channelId);
 }
-
